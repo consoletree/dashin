@@ -29,35 +29,33 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export function UsageLineChart({ data, dataKey = 'value', title, color = '#6366f1' }) {
   return (
-    <div className="card">
-      {title && <div className="card-header">{title}</div>}
-      <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3a" />
-            <XAxis 
-              dataKey="date" 
-              stroke="#666" 
-              tick={{ fill: '#666', fontSize: 12 }}
-              tickLine={{ stroke: '#666' }}
-            />
-            <YAxis 
-              stroke="#666" 
-              tick={{ fill: '#666', fontSize: 12 }}
-              tickLine={{ stroke: '#666' }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Line 
-              type="monotone" 
-              dataKey={dataKey} 
-              stroke={color} 
-              strokeWidth={2}
-              dot={false}
-              activeDot={{ r: 4, fill: color }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+    <div className="h-full w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3a" />
+          <XAxis 
+            dataKey="date" 
+            stroke="#666" 
+            tick={{ fill: '#666', fontSize: 12 }}
+            tickLine={{ stroke: '#666' }}
+          />
+          <YAxis 
+            stroke="#666" 
+            tick={{ fill: '#666', fontSize: 12 }}
+            tickLine={{ stroke: '#666' }}
+            width={50}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Line 
+            type="monotone" 
+            dataKey={dataKey} 
+            stroke={color} 
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4, fill: color }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }
