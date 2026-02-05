@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Users, AlertTriangle, DollarSign, Activity, TrendingUp, TrendingDown } from 'lucide-react';
+import { Users, AlertTriangle, Activity, TrendingDown } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import RiskRadar from '../components/RiskRadar';
-import IncidentsList from '../components/IncidentsList';
 import { UsageLineChart } from '../components/Charts';
 import Loading from '../components/Loading';
 import { analyticsApi } from '../utils/api';
-import { formatNumber, formatCurrency } from '../utils/helpers';
+import { formatNumber } from '../utils/helpers';
 
-export default function Dashboard() {
+export default function Dashboard({ darkMode }) {
   const [overview, setOverview] = useState(null);
   const [incidentStats, setIncidentStats] = useState(null);
   const [usageData, setUsageData] = useState(null);
@@ -36,14 +35,12 @@ export default function Dashboard() {
     };
 
     fetchData();
-    
-    // Refresh every 30 seconds
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
 
   if (loading && !overview) {
-    return <Loading message="Loading dashboard..." />;
+    return <Loading message="Waking up server... This may take 30 seconds on first load." />;
   }
 
   if (error) {
@@ -51,12 +48,11 @@ export default function Dashboard() {
       <div className="text-center py-12">
         <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-red-400" />
         <h2 className="text-xl font-bold mb-2">Failed to load dashboard</h2>
-        <p className="text-gray-500">{error}</p>
+        <p className={darkMode ? 'text-gray-500' : 'text-gray-600'}>{error}</p>
       </div>
     );
   }
 
-  // Transform usage data for chart
   const chartData = usageData?.map(day => ({
     date: day._id,
     ...day.metrics.reduce((acc, m) => ({ ...acc, [m.type]: m.value }), {})
@@ -66,20 +62,20 @@ export default function Dashboard() {
                        (incidentStats?.statusDistribution?.['In Progress'] || 0);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="h-[calc(100vh-4rem)] flex flex-col gap-4 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-shrink-0">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-gray-500">Customer health overview and insights</p>
+          <p className={darkMode ? 'text-gray-500' : 'text-gray-600'}>Customer health overview</p>
         </div>
-        <div className="text-sm text-gray-500">
+        <div className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
           Last updated: {new Date().toLocaleTimeString()}
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 flex-shrink-0">
         <StatCard
           title="Total Clients"
           value={formatNumber(overview?.totalClients || 0)}
@@ -93,7 +89,6 @@ export default function Dashboard() {
           subtitle="Platform-wide"
           icon={Activity}
           color={parseFloat(overview?.averageHealthScore) >= 70 ? 'emerald' : 'amber'}
-          trend={parseFloat(overview?.averageHealthScore) >= 70 ? 'up' : 'down'}
         />
         <StatCard
           title="At Risk"
@@ -114,22 +109,22 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Risk Radar - 1 column */}
-        <div className="xl:col-span-1 min-w-0">
+      {/* Main Content */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 flex-1 min-h-0">
+        {/* Risk Radar */}
+        <div className="xl:col-span-1 min-w-0 overflow-auto">
           <RiskRadar 
             clients={overview?.atRiskClients || []} 
             recentChanges={overview?.recentRiskChanges || 0}
           />
         </div>
-      
-        {/* Charts - 2 columns */}
-        <div className="xl:col-span-2 space-y-6 min-w-0">
-          {/* Usage Chart */}
-          <div className="card">
+
+        {/* Right Side */}
+        <div className="xl:col-span-2 flex flex-col gap-4 min-w-0">
+          {/* Chart */}
+          <div className="card flex-1 min-h-0">
             <div className="card-header">Platform Usage (Last 14 Days)</div>
-            <div className="h-64">
+            <div className="h-48">
               {chartData.length > 0 ? (
                 <UsageLineChart 
                   data={chartData} 
@@ -137,105 +132,58 @@ export default function Dashboard() {
                   color="#6366f1"
                 />
               ) : (
-                <div className="h-full flex items-center justify-center text-gray-500">
+                <div className={`h-full flex items-center justify-center ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
                   No usage data available
                 </div>
               )}
             </div>
           </div>
 
-          {/* Risk Distribution */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {['Healthy', 'At Risk', 'Critical', 'Churned'].map(status => {
-              const count = overview?.riskDistribution?.[status] || 0;
-              const colors = {
-                'Healthy': 'emerald',
-                'At Risk': 'amber',
-                'Critical': 'red',
-                'Churned': 'purple'
-              };
-              
-              return (
-                <div key={status} className="card text-center">
-                  <div className="text-sm text-gray-500 mb-2">{status}</div>
-                  <div className={`text-2xl font-bold text-${colors[status]}-400`}>
-                    {count}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+          {/* Bottom Grid - Risk Distribution & Incident Breakdown */}
+          <div className="grid grid-cols-2 gap-4 flex-shrink-0">
+            {/* Risk Distribution */}
+            <div className="card">
+              <div className="card-header mb-3">Risk Distribution</div>
+              <div className="grid grid-cols-2 gap-2">
+                {['Healthy', 'At Risk', 'Critical', 'Churned'].map(status => {
+                  const count = overview?.riskDistribution?.[status] || 0;
+                  const colorMap = {
+                    'Healthy': 'text-emerald-500',
+                    'At Risk': 'text-amber-500',
+                    'Critical': 'text-red-500',
+                    'Churned': 'text-gray-500'
+                  };
+                  return (
+                    <div key={status} className={`text-center p-2 rounded-lg ${darkMode ? 'bg-white/5' : 'bg-gray-100'}`}>
+                      <div className={`text-xl font-bold ${colorMap[status]}`}>{count}</div>
+                      <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>{status}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
 
-      {/* Incidents Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <IncidentsList 
-          incidents={incidentStats?.recentIncidents || []} 
-          loading={loading}
-        />
-        
-        {/* Incident Stats */}
-        <div className="card">
-          <div className="card-header">Incident Breakdown</div>
-          
-          <div className="space-y-4">
-            <div>
-              <div className="text-sm text-gray-500 mb-2">By Severity</div>
-              <div className="flex gap-2">
+            {/* Incident Breakdown */}
+            <div className="card">
+              <div className="card-header mb-3">Incident Breakdown</div>
+              <div className="grid grid-cols-2 gap-2">
                 {['Low', 'Medium', 'High', 'Critical'].map(severity => {
                   const count = incidentStats?.severityDistribution?.[severity] || 0;
-                  const colors = {
-                    'Low': 'bg-blue-500/20 text-blue-400',
-                    'Medium': 'bg-amber-500/20 text-amber-400',
-                    'High': 'bg-orange-500/20 text-orange-400',
-                    'Critical': 'bg-red-500/20 text-red-400'
+                  const colorMap = {
+                    'Low': 'text-blue-500',
+                    'Medium': 'text-amber-500',
+                    'High': 'text-orange-500',
+                    'Critical': 'text-red-500'
                   };
-                  
                   return (
-                    <div key={severity} className={`flex-1 p-3 rounded-lg ${colors[severity]}`}>
-                      <div className="text-lg font-bold">{count}</div>
-                      <div className="text-xs opacity-80">{severity}</div>
+                    <div key={severity} className={`text-center p-2 rounded-lg ${darkMode ? 'bg-white/5' : 'bg-gray-100'}`}>
+                      <div className={`text-xl font-bold ${colorMap[severity]}`}>{count}</div>
+                      <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>{severity}</div>
                     </div>
                   );
                 })}
               </div>
             </div>
-
-            <div>
-              <div className="text-sm text-gray-500 mb-2">By Status</div>
-              <div className="space-y-2">
-                {['Open', 'In Progress', 'Pending', 'Resolved'].map(status => {
-                  const count = incidentStats?.statusDistribution?.[status] || 0;
-                  const total = Object.values(incidentStats?.statusDistribution || {}).reduce((a, b) => a + b, 1);
-                  const percentage = Math.round((count / total) * 100);
-                  
-                  return (
-                    <div key={status}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-400">{status}</span>
-                        <span>{count}</span>
-                      </div>
-                      <div className="h-2 bg-[#2a2a3a] rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-indigo-500 rounded-full transition-all"
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {incidentStats?.totalSLABreaches > 0 && (
-              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
-                <div className="flex items-center gap-2 text-red-400">
-                  <AlertTriangle className="w-4 h-4" />
-                  <span className="font-medium">{incidentStats.totalSLABreaches} SLA Breaches</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
