@@ -26,7 +26,7 @@ export default function ClientTable({
           />
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex gap-2 pr-4">
           <select
             className="input text-sm"
             value={filters?.riskStatus || ''}
@@ -88,8 +88,9 @@ export default function ClientTable({
                 return (
                   <tr 
                     key={client._id} 
-                    className="border-b border-[#2a2a3a]/50 hover:bg-white/5 transition-colors animate-fade-in"
+                    className="border-b border-[#2a2a3a]/50 hover:bg-white/5 transition-colors animate-fade-in cursor-pointer"
                     style={{ animationDelay: `${index * 30}ms` }}
+                    onClick={() => window.location.href = `/clients/${client._id}`}
                   >
                     <td className="px-6 py-4">
                       <div>
