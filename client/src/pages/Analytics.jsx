@@ -151,10 +151,15 @@ export default function Analytics() {
                 </Pie>
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1a1a25', 
-                    border: '1px solid #2a2a3a',
-                    borderRadius: '8px'
+                    backgroundColor: '#1e1e2a', 
+                    border: '1px solid #3a3a4a',
+                    borderRadius: '8px',
+                    color: '#ffffff'
                   }}
+                  labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
+                  itemStyle={{ color: '#a5b4fc' }}
+                  formatter={(value) => formatCurrency(value)}
+                  cursor={{ fill: 'transparent' }}
                 />
                 <Legend />
               </PieChart>
