@@ -84,10 +84,65 @@ export default function Clients() {
             {pagination?.total || 0} total clients
           </p>
         </div>
-        <button className="btn-primary flex items-center gap-2">
+        <button 
+          className="btn-primary flex items-center gap-2"
+          onClick={() => setShowAddModal(true)}
+        >
           <Plus className="w-4 h-4" />
           Add Client
         </button>
+        
+        {showAddModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="card w-full max-w-md">
+              <h2 className="text-xl font-bold mb-4">Add New Client</h2>
+              <form onSubmit={handleAddClient} className="space-y-4">
+                <input
+                  type="text"
+                  placeholder="Company Name"
+                  className="input w-full"
+                  value={newClient.company}
+                  onChange={(e) => setNewClient({...newClient, company: e.target.value})}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Contact Name"
+                  className="input w-full"
+                  value={newClient.name}
+                  onChange={(e) => setNewClient({...newClient, name: e.target.value})}
+                  required
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="input w-full"
+                  value={newClient.email}
+                  onChange={(e) => setNewClient({...newClient, email: e.target.value})}
+                  required
+                />
+                <select
+                  className="input w-full"
+                  value={newClient.planTier}
+                  onChange={(e) => setNewClient({...newClient, planTier: e.target.value})}
+                >
+                  <option value="Bronze">Bronze</option>
+                  <option value="Silver">Silver</option>
+                  <option value="Gold">Gold</option>
+                  <option value="Enterprise">Enterprise</option>
+                </select>
+                <div className="flex gap-2 justify-end">
+                  <button type="button" className="btn-secondary" onClick={() => setShowAddModal(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn-primary">
+                    Add Client
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Error State */}
