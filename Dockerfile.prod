@@ -1,0 +1,27 @@
+# 1. Build React Client
+FROM node:20-alpine AS client-build
+WORKDIR /app/client
+COPY client/package*.json ./
+RUN npm install
+COPY client/ .
+RUN npm run build
+
+# 2. Build Backend & Worker
+FROM node:20-alpine
+WORKDIR /app
+# Install Nginx to serve the frontend
+RUN apk add --no-cache nginx
+COPY server/package*.json ./server/
+RUN cd server && npm install
+COPY server/ ./server/
+
+# Copy React build to Nginx
+COPY --from=client-build /app/client/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/http.d/default.conf
+
+# Start script: Runs Worker, API, and Nginx at once
+RUN echo "node server/index.js & node server/workers/healthScoreWorker.js & nginx -g 'daemon off;'" > /start.sh
+RUN chmod +x /start.sh
+
+EXPOSE 80
+CMD ["/bin/sh", "/start.sh"]
