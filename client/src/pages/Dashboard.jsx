@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Users, AlertTriangle, Activity, TrendingDown } from 'lucide-react';
+import { Users, AlertTriangle, Activity, TrendingDown, ChevronRight } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import { UsageLineChart } from '../components/Charts';
 import Loading from '../components/Loading';
@@ -61,8 +61,24 @@ export default function Dashboard({ darkMode }) {
   const openIncidents = (incidentStats?.statusDistribution?.Open || 0) + 
                        (incidentStats?.statusDistribution?.['In Progress'] || 0);
 
-  // Only show top 3 at-risk clients
-  const topRiskClients = (overview?.atRiskClients || []).slice(0, 3);
+  const topRiskClients = (overview?.atRiskClients || []).slice(0, 4);
+
+  const riskData = [
+    { status: 'Healthy', color: '#10b981', count: overview?.riskDistribution?.['Healthy'] || 0 },
+    { status: 'At Risk', color: '#f59e0b', count: overview?.riskDistribution?.['At Risk'] || 0 },
+    { status: 'Critical', color: '#ef4444', count: overview?.riskDistribution?.['Critical'] || 0 },
+    { status: 'Churned', color: '#6b7280', count: overview?.riskDistribution?.['Churned'] || 0 }
+  ];
+
+  const incidentData = [
+    { severity: 'Low', color: '#3b82f6', count: incidentStats?.severityDistribution?.['Low'] || 0 },
+    { severity: 'Medium', color: '#f59e0b', count: incidentStats?.severityDistribution?.['Medium'] || 0 },
+    { severity: 'High', color: '#f97316', count: incidentStats?.severityDistribution?.['High'] || 0 },
+    { severity: 'Critical', color: '#ef4444', count: incidentStats?.severityDistribution?.['Critical'] || 0 }
+  ];
+
+  const totalRisk = riskData.reduce((sum, d) => sum + d.count, 0) || 1;
+  const totalIncidents = incidentData.reduce((sum, d) => sum + d.count, 0) || 1;
 
   return (
     <div className="space-y-4">
@@ -112,39 +128,53 @@ export default function Dashboard({ darkMode }) {
         />
       </div>
 
-      {/* Main Content - 3 Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      {/* Main Content - 2 Column Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
-        {/* Risk Radar - Limited to 3 clients */}
+        {/* Left Column - Risk Radar */}
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <div className="card-header mb-0 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-500" />
               Risk Radar
             </div>
+            <Link
+              to="/clients?riskStatus=At%20Risk"
+              className="text-xs text-indigo-500 hover:text-indigo-400 flex items-center gap-1"
+            >
+              View all <ChevronRight className="w-3 h-3" />
+            </Link>
           </div>
           
           {topRiskClients.length === 0 ? (
-            <div className={`text-center py-4 ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
-              All clients are healthy!
+            <div className={`text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
+              🎉 All clients are healthy!
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {topRiskClients.map((client) => {
                 const riskColor = getRiskColor(client.riskStatus);
                 const tierColor = getTierColor(client.planTier);
+                const healthColor = client.currentHealthScore >= 70 ? '#10b981' : client.currentHealthScore >= 50 ? '#f59e0b' : '#ef4444';
+                
                 return (
                   <Link
                     key={client._id}
                     to={`/clients/${client._id}`}
-                    className={`block p-3 rounded-lg border transition-all hover:scale-[1.02] ${
+                    className={`flex items-center justify-between p-3 rounded-lg border transition-all hover:scale-[1.01] ${
                       darkMode ? 'border-[#2a2a3a] hover:bg-white/5' : 'border-gray-200 hover:bg-gray-50'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div 
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+                        style={{ backgroundColor: healthColor }}
+                      >
+                        {client.currentHealthScore}
+                      </div>
+                      <div className="min-w-0">
                         <div className="font-medium truncate">{client.company || client.name}</div>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-1 mt-0.5">
                           <span className={`badge text-xs ${riskColor.bg} ${riskColor.text}`}>
                             {client.riskStatus}
                           </span>
@@ -153,69 +183,79 @@ export default function Dashboard({ darkMode }) {
                           </span>
                         </div>
                       </div>
-                      <div className="text-2xl font-bold ml-3" style={{ color: client.currentHealthScore >= 70 ? '#10b981' : client.currentHealthScore >= 50 ? '#f59e0b' : '#ef4444' }}>
-                        {client.currentHealthScore}
-                      </div>
                     </div>
+                    <ChevronRight className={`w-4 h-4 flex-shrink-0 ${darkMode ? 'text-gray-600' : 'text-gray-400'}`} />
                   </Link>
                 );
               })}
             </div>
           )}
-          
-          <Link
-            to="/clients?riskStatus=At%20Risk"
-            className="block mt-4 text-center text-sm text-indigo-500 hover:text-indigo-400"
-          >
-            View all at-risk clients →
-          </Link>
         </div>
 
-        {/* Risk Distribution */}
-        <div className="card">
-          <div className="card-header mb-4">Risk Distribution</div>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { status: 'Healthy', color: '#10b981' },
-              { status: 'At Risk', color: '#f59e0b' },
-              { status: 'Critical', color: '#ef4444' },
-              { status: 'Churned', color: '#6b7280' }
-            ].map(({ status, color }) => {
-              const count = overview?.riskDistribution?.[status] || 0;
-              return (
-                <div 
-                  key={status} 
-                  className={`text-center p-4 rounded-lg ${darkMode ? 'bg-white/5' : 'bg-gray-100'}`}
-                >
-                  <div className="text-2xl font-bold" style={{ color }}>{count}</div>
-                  <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{status}</div>
+        {/* Right Column - Stats Breakdown */}
+        <div className="grid grid-rows-2 gap-4">
+          {/* Risk Distribution */}
+          <div className="card">
+            <div className="card-header mb-3">Risk Distribution</div>
+            <div className="flex items-center gap-4">
+              {/* Bar visualization */}
+              <div className="flex-1">
+                <div className="h-4 rounded-full overflow-hidden flex" style={{ backgroundColor: darkMode ? '#1a1a25' : '#f1f5f9' }}>
+                  {riskData.map((item, i) => (
+                    <div
+                      key={item.status}
+                      style={{ 
+                        width: `${(item.count / totalRisk) * 100}%`,
+                        backgroundColor: item.color
+                      }}
+                      className="h-full transition-all"
+                      title={`${item.status}: ${item.count}`}
+                    />
+                  ))}
                 </div>
-              );
-            })}
+                {/* Legend */}
+                <div className="flex justify-between mt-3">
+                  {riskData.map((item) => (
+                    <div key={item.status} className="text-center">
+                      <div className="text-lg font-bold" style={{ color: item.color }}>{item.count}</div>
+                      <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>{item.status}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Incident Breakdown */}
-        <div className="card">
-          <div className="card-header mb-4">Incident Breakdown</div>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { severity: 'Low', color: '#3b82f6' },
-              { severity: 'Medium', color: '#f59e0b' },
-              { severity: 'High', color: '#f97316' },
-              { severity: 'Critical', color: '#ef4444' }
-            ].map(({ severity, color }) => {
-              const count = incidentStats?.severityDistribution?.[severity] || 0;
-              return (
-                <div 
-                  key={severity} 
-                  className={`text-center p-4 rounded-lg ${darkMode ? 'bg-white/5' : 'bg-gray-100'}`}
-                >
-                  <div className="text-2xl font-bold" style={{ color }}>{count}</div>
-                  <div className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{severity}</div>
+          {/* Incident Breakdown */}
+          <div className="card">
+            <div className="card-header mb-3">Incident Breakdown</div>
+            <div className="flex items-center gap-4">
+              {/* Bar visualization */}
+              <div className="flex-1">
+                <div className="h-4 rounded-full overflow-hidden flex" style={{ backgroundColor: darkMode ? '#1a1a25' : '#f1f5f9' }}>
+                  {incidentData.map((item) => (
+                    <div
+                      key={item.severity}
+                      style={{ 
+                        width: `${(item.count / totalIncidents) * 100}%`,
+                        backgroundColor: item.color
+                      }}
+                      className="h-full transition-all"
+                      title={`${item.severity}: ${item.count}`}
+                    />
+                  ))}
                 </div>
-              );
-            })}
+                {/* Legend */}
+                <div className="flex justify-between mt-3">
+                  {incidentData.map((item) => (
+                    <div key={item.severity} className="text-center">
+                      <div className="text-lg font-bold" style={{ color: item.color }}>{item.count}</div>
+                      <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>{item.severity}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -223,7 +263,7 @@ export default function Dashboard({ darkMode }) {
       {/* Chart - Full Width */}
       <div className="card">
         <div className="card-header mb-4">Platform Usage (Last 14 Days)</div>
-        <div className="h-64">
+        <div className="h-52">
           {chartData.length > 0 ? (
             <UsageLineChart 
               data={chartData} 
