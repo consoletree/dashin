@@ -115,17 +115,17 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Risk Radar - 1 column */}
-        <div className="lg:col-span-1">
+        <div className="xl:col-span-1 min-w-0">
           <RiskRadar 
             clients={overview?.atRiskClients || []} 
             recentChanges={overview?.recentRiskChanges || 0}
           />
         </div>
-
+      
         {/* Charts - 2 columns */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-6 min-w-0">
           {/* Usage Chart */}
           <div className="card">
             <div className="card-header">Platform Usage (Last 14 Days)</div>
