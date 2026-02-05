@@ -22,7 +22,7 @@ export const cacheDelete = async (pattern) => {
 
 export default redis;
 
-```
+/*
 import Redis from 'ioredis';
 
 let redis = null;
@@ -92,4 +92,4 @@ export const cacheDelete = async (pattern) => {
 };
 
 export default redis;
-```
+*/
