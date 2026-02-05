@@ -1,3 +1,28 @@
+let redis = null;
+
+export const connectRedis = () => {
+  console.log('⚠️ Redis disabled - running without cache');
+  return null;
+};
+
+export const getRedis = () => null;
+
+// Cache utilities - return null/false when Redis is disabled
+export const cacheGet = async (key) => {
+  return null;
+};
+
+export const cacheSet = async (key, data, ttl = 300) => {
+  return false;
+};
+
+export const cacheDelete = async (pattern) => {
+  return false;
+};
+
+export default redis;
+
+```
 import Redis from 'ioredis';
 
 let redis = null;
@@ -67,3 +92,4 @@ export const cacheDelete = async (pattern) => {
 };
 
 export default redis;
+```
