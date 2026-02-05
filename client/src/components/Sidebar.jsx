@@ -78,9 +78,22 @@ export default function Sidebar({ darkMode, setDarkMode }) {
 
       {/* Footer */}
       <div className="p-4 border-t border-[#2a2a3a]">
-        <div className="flex items-center gap-3 text-gray-500 text-sm">
-          <Settings className="w-4 h-4" />
-          <span>v1.0.0</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 text-gray-500 text-sm">
+            <Settings className="w-4 h-4" />
+            <span>v1.0.0</span>
+          </div>
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {darkMode ? (
+              <Sun className="w-5 h-5 text-yellow-400" />
+            ) : (
+              <Moon className="w-5 h-5 text-indigo-400" />
+            )}
+          </button>
         </div>
       </div>
     </aside>
