@@ -156,10 +156,9 @@ export default function Analytics() {
                     borderRadius: '8px',
                     color: '#ffffff'
                   }}
-                  labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
-                  itemStyle={{ color: '#a5b4fc' }}
-                  formatter={(value) => formatCurrency(value)}
-                  cursor={{ fill: 'transparent' }}
+                  labelStyle={{ color: '#ffffff' }}
+                  itemStyle={{ color: '#ffffff' }}
+                  formatter={(value, name) => [value, name]}
                 />
                 <Legend />
               </PieChart>
@@ -172,13 +171,32 @@ export default function Analytics() {
           <div className="card-header">Revenue by Plan Tier</div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={tierData}>
+              <BarChart data={tierData} barCategoryGap="20%">
                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3a" />
                 <XAxis 
                   dataKey="name" 
                   stroke="#666"
                   tick={{ fill: '#666', fontSize: 12 }}
                 />
+                <YAxis 
+                  stroke="#666"
+                  tick={{ fill: '#666', fontSize: 12 }}
+                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#1e1e2a', 
+                    border: '1px solid #3a3a4a',
+                    borderRadius: '8px',
+                    color: '#ffffff'
+                  }}
+                  labelStyle={{ color: '#ffffff', fontWeight: 'bold' }}
+                  itemStyle={{ color: '#a5b4fc' }}
+                  formatter={(value) => formatCurrency(value)}
+                  cursor={false}
+                />
+                <Bar dataKey="revenue" fill="#6366f1" radius={[4, 4, 0, 0]} />
+              </BarChart>
                 <YAxis 
                   stroke="#666"
                   tick={{ fill: '#666', fontSize: 12 }}
