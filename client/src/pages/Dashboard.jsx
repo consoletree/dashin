@@ -7,7 +7,7 @@ import { analyticsApi } from '../utils/api';
 import { formatNumber, getRiskColor, getTierColor } from '../utils/helpers';
 import { Link } from 'react-router-dom';
 
-export default function Dashboard({ darkMode }) {
+export default function Dashboard() {
   const [overview, setOverview] = useState(null);
   const [incidentStats, setIncidentStats] = useState(null);
   const [usageData, setUsageData] = useState(null);
@@ -48,7 +48,7 @@ export default function Dashboard({ darkMode }) {
       <div className="text-center py-12">
         <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-red-400" />
         <h2 className="text-xl font-bold mb-2">Failed to load dashboard</h2>
-        <p className={darkMode ? 'text-gray-500' : 'text-gray-600'}>{error}</p>
+        <p className="text-gray-500">{error}</p>
       </div>
     );
   }
@@ -86,9 +86,9 @@ export default function Dashboard({ darkMode }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className={darkMode ? 'text-gray-500' : 'text-gray-600'}>Customer health overview</p>
+          <p className="text-gray-500">Customer health overview</p>
         </div>
-        <div className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
+        <div className="text-sm text-gray-500">
           Last updated: {new Date().toLocaleTimeString()}
         </div>
       </div>
@@ -147,7 +147,7 @@ export default function Dashboard({ darkMode }) {
           </div>
           
           {topRiskClients.length === 0 ? (
-            <div className={`text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
+            <div className="text-center py-8 text-gray-500">
               🎉 All clients are healthy!
             </div>
           ) : (
@@ -161,9 +161,7 @@ export default function Dashboard({ darkMode }) {
                   <Link
                     key={client._id}
                     to={`/clients/${client._id}`}
-                    className={`flex items-center justify-between p-3 rounded-lg border transition-all hover:scale-[1.01] ${
-                      darkMode ? 'border-[#2a2a3a] hover:bg-white/5' : 'border-gray-200 hover:bg-gray-50'
-                    }`}
+                    className="flex items-center justify-between p-3 rounded-lg border border-[#2a2a3a] hover:bg-white/5 transition-all hover:scale-[1.01]"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div 
@@ -184,7 +182,7 @@ export default function Dashboard({ darkMode }) {
                         </div>
                       </div>
                     </div>
-                    <ChevronRight className={`w-4 h-4 flex-shrink-0 ${darkMode ? 'text-gray-600' : 'text-gray-400'}`} />
+                    <ChevronRight className="w-4 h-4 flex-shrink-0 text-gray-600" />
                   </Link>
                 );
               })}
@@ -198,10 +196,9 @@ export default function Dashboard({ darkMode }) {
           <div className="card">
             <div className="card-header mb-3">Risk Distribution</div>
             <div className="flex items-center gap-4">
-              {/* Bar visualization */}
               <div className="flex-1">
-                <div className="h-4 rounded-full overflow-hidden flex" style={{ backgroundColor: darkMode ? '#1a1a25' : '#f1f5f9' }}>
-                  {riskData.map((item, i) => (
+                <div className="h-4 rounded-full overflow-hidden flex bg-[#1a1a25]">
+                  {riskData.map((item) => (
                     <div
                       key={item.status}
                       style={{ 
@@ -213,12 +210,11 @@ export default function Dashboard({ darkMode }) {
                     />
                   ))}
                 </div>
-                {/* Legend */}
                 <div className="flex justify-between mt-3">
                   {riskData.map((item) => (
                     <div key={item.status} className="text-center">
                       <div className="text-lg font-bold" style={{ color: item.color }}>{item.count}</div>
-                      <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>{item.status}</div>
+                      <div className="text-xs text-gray-500">{item.status}</div>
                     </div>
                   ))}
                 </div>
@@ -230,9 +226,8 @@ export default function Dashboard({ darkMode }) {
           <div className="card">
             <div className="card-header mb-3">Incident Breakdown</div>
             <div className="flex items-center gap-4">
-              {/* Bar visualization */}
               <div className="flex-1">
-                <div className="h-4 rounded-full overflow-hidden flex" style={{ backgroundColor: darkMode ? '#1a1a25' : '#f1f5f9' }}>
+                <div className="h-4 rounded-full overflow-hidden flex bg-[#1a1a25]">
                   {incidentData.map((item) => (
                     <div
                       key={item.severity}
@@ -245,12 +240,11 @@ export default function Dashboard({ darkMode }) {
                     />
                   ))}
                 </div>
-                {/* Legend */}
                 <div className="flex justify-between mt-3">
                   {incidentData.map((item) => (
                     <div key={item.severity} className="text-center">
                       <div className="text-lg font-bold" style={{ color: item.color }}>{item.count}</div>
-                      <div className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>{item.severity}</div>
+                      <div className="text-xs text-gray-500">{item.severity}</div>
                     </div>
                   ))}
                 </div>
@@ -271,7 +265,7 @@ export default function Dashboard({ darkMode }) {
               color="#6366f1"
             />
           ) : (
-            <div className={`h-full flex items-center justify-center ${darkMode ? 'text-gray-500' : 'text-gray-600'}`}>
+            <div className="h-full flex items-center justify-center text-gray-500">
               No usage data available
             </div>
           )}
