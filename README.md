@@ -2,7 +2,7 @@
 
 A full-stack MERN application demonstrating enterprise-grade architecture for customer health monitoring, telemetry analysis, and support incident tracking.
 
-![Dashboard Preview](https://dashin.itsaebin.com)
+![Dashboard Preview](https://www.dashin.itsaebin.com)
 
 ## 🏗️ Architecture Decisions
 
