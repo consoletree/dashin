@@ -16,7 +16,9 @@ const navItems = [
   { to: '/analytics', icon: BarChart3, label: 'Analytics' },
 ];
 
-export default function Sidebar() {
+import { Sun, Moon } from 'lucide-react';
+
+export default function Sidebar({ darkMode, setDarkMode }) {
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-[#12121a] border-r border-[#2a2a3a] flex flex-col">
       {/* Logo */}
