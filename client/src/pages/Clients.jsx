@@ -12,6 +12,26 @@ export default function Clients() {
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newClient, setNewClient] = useState({
+    company: '',
+    name: '',
+    email: '',
+    planTier: 'Bronze'
+  });
+  
+  const handleAddClient = async (e) => {
+    e.preventDefault();
+    try {
+      await clientsApi.create(newClient);
+      setShowAddModal(false);
+      setNewClient({ company: '', name: '', email: '', planTier: 'Bronze' });
+      fetchClients();
+    } catch (err) {
+      alert('Failed to add client: ' + (err.error || err.message));
+    }
+  };
   
   const [filters, setFilters] = useState({
     riskStatus: searchParams.get('riskStatus') || '',
