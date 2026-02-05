@@ -145,7 +145,7 @@ export default function Dashboard() {
           </div>
 
           {/* Risk Distribution */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {['Healthy', 'At Risk', 'Critical', 'Churned'].map(status => {
               const count = overview?.riskDistribution?.[status] || 0;
               const colors = {
