@@ -156,7 +156,6 @@ export default function Analytics() {
                     borderRadius: '8px',
                     color: '#ffffff'
                   }}
-                  labelStyle={{ color: '#ffffff' }}
                   itemStyle={{ color: '#ffffff' }}
                   formatter={(value, name) => [value, name]}
                 />
@@ -171,7 +170,7 @@ export default function Analytics() {
           <div className="card-header">Revenue by Plan Tier</div>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={tierData} barCategoryGap="20%">
+              <BarChart data={tierData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2a3a" />
                 <XAxis 
                   dataKey="name" 
@@ -194,21 +193,6 @@ export default function Analytics() {
                   itemStyle={{ color: '#a5b4fc' }}
                   formatter={(value) => formatCurrency(value)}
                   cursor={false}
-                />
-                <Bar dataKey="revenue" fill="#6366f1" radius={[4, 4, 0, 0]} />
-              </BarChart>
-                <YAxis 
-                  stroke="#666"
-                  tick={{ fill: '#666', fontSize: 12 }}
-                  tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#1a1a25', 
-                    border: '1px solid #2a2a3a',
-                    borderRadius: '8px'
-                  }}
-                  formatter={(value) => formatCurrency(value)}
                 />
                 <Bar dataKey="revenue" fill="#6366f1" radius={[4, 4, 0, 0]} />
               </BarChart>
