@@ -29,8 +29,8 @@ The architecture separates **Reads** (Dashboard) from **Writes** (Telemetry) to 
 
 ```bash
 # Up and running in one command
-git clone <repository-url>
-cd customer-intelligence-platform
+git clone https://www.github.com/consoletree/dashin
+cd dashin
 docker-compose up -d --build
 
 # Seed data and access at http://localhost:3000
@@ -85,10 +85,6 @@ To tweak the health algorithm logic, modify: `server/workers/healthScoreWorker.j
 1. Fork and branch (`git checkout -b feature/amazing-feature`)
 2. Commit and push
 3. Open a Pull Request
-
-## 📄 License
-
-MIT License.
 
 ---
 **Built to demonstrate system design, queue management, and data visualization skills.**
